@@ -109,10 +109,7 @@
 
         });
 
-        $("#imgUbicacion").click(function () {
-            //alert('cambio de oagina');
-            $.mobile.changePage('geocalizacion.html');
-        })
+
     };
 
     function onPause() {
