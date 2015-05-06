@@ -1,127 +1,71 @@
-﻿
-(function () {
-    "use strict";
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-    document.addEventListener('deviceready', onDeviceReady.bind(this), false);
+var app = {
+    // Application Constructor
+    initialize: function() {
+        this.bindEvents();
+    },
+    // Bind Event Listeners
+    //
+    // Bind any events that are required on startup. Common events are:
+    // 'load', 'deviceready', 'offline', and 'online'.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    // deviceready Event Handler
+    //
+    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+    // function, we must explicitly call 'app.receivedEvent(...);'
+    onDeviceReady: function() {
+       // app.receivedEvent('deviceready');
+       navigator.geolocation.getCurrentPosition(app.onSuccess, app.onError);
+    },
 
-    function onDeviceReady() {
-        // Handle the Cordova pause and resume events
-        document.addEventListener('pause', onPause.bind(this), false);
-        document.addEventListener('resume', onResume.bind(this), false);
+    onSuccess: function(position){
+        var longitude = position.coords.longitude;
+        var latitude = position.coords.latitude;
+        var latLong = new google.maps.LatLng(latitude, longitude);
 
-        $("#btnLogin").click(function () {
-            //var params = { a: $("#first").val(), b: $("#second").val() };
-            //var params = "{ UserName: 'Santi', Password: 'DDDD' }";
-            //var parametros = { "UserName": $("#txtUsername").val(), "Password": $("#txtPassword").val() };
+        var mapOptions = {
+            center: latLong,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
 
-            if ($("#txtUsername").val().trim() == "") {
-                //navigator.notification.alert("Enter a Username", function () { });
-                alert("Enter a Username");
-                return false;
-            }
+        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-            if ($("#txtPassword").val().trim() == "") {
-                //navigator.notification.alert("Enter a Password", function () { });
-                alert("Enter a Password");
-                return false;
-            }
+        var locationmarker = {
+            url: 'img/blue_dot.png',
+            anchor: new google.maps.Point(16, 0)
+        }
+        var marker = new google.maps.Marker({
+              position: latLong,
+              map: map,
+              title: 'my location',
+              icon: locationmarker
+          });
+    },
+    
+    onError: function(error){
+        alert("the code is " + error.code + ". \n" + "message: " + error.message);
+    },
+};
 
-            //wcfServiceUrl = "https://www.chancesrmis.com/wcfphonegap/AutenticationMobile.svc/";
-            wcfServiceUrl = "http://23.253.204.98/wcfphonegap/AutenticationMobile.svc/";
-            //wcfServiceUrl = "http://localhost:10786/AutenticationMobile.svc/";
-            //wcfServiceUrl = "http://localhost:10786/UserAutentication.svc/";
-
-            //var urlk1 = wcfServiceUrl + "Login?UserName=" + $("#txtUsername").val() + "&Password=" + $("#txtPassword").val() + "";
-            var urlk1 = wcfServiceUrl + "AutenticationUser?IdUsername=" + $("#txtUsername").val() + "&Password=" + $("#txtPassword").val() + "&IdAplication=2";
-            //var urlk1 = wcfServiceUrl + "Login?UserName=" + JSON.stringify($("#txtUsername").val()) + "&Password=" + JSON.stringify($("#txtPassword").val()) + "";
-
-            $.ajax({
-                cache: true,
-                url: urlk1,
-                crossDomain: true,
-                //data: "{ UserName: " + JSON.stringify($("#txtUsername").val()) + ", Password: " + JSON.stringify($("#txtPassword").val()) + " }",
-                data: "{ UserName: " + $("#txtUsername").val() + ", Password: " + $("#txtPassword").val() + ", IdAplication: 4 }",
-                type: "GET",
-                jsonpCallback: "UserApplication",
-                //contentType: "application/javascript",
-                contentType: "application/json; charset=utf-8",
-                dataType: "jsonp",
-                beforeSend: function () {
-                    //$("#results").html("Procesando, espere por favor...");
-                    //$('#results').html("<img src='images/ajax-loader.gif' />");
-                    //$("#results").addClass("loading");
-                    $("#imgAjaxLoader").show();
-                },
-                error: function (xhr, textStatus, err) {
-                    var mensaje = "readyState: " + xhr.readyState + "\n";
-                    mensaje = mensaje + "responseText: " + xhr.responseText + "\n";
-                    mensaje = mensaje + "status: " + xhr.status + "\n";
-                    mensaje = mensaje + "text status: " + textStatus + "\n";
-                    mensaje = mensaje + "error: " + err + "\n";
-                    alert(mensaje);
-                    $('#results').html("");
-                },
-                success: function (obj) {
-                    //$.each(menu, populateDropdown); // must call function as var
-                    //populateDropdown(obj);
-                    if (obj.AutenticationUserResult.error.Descripcion == '') {
-                        //window.localStorage["username"] = obj.AutenticationUserResult.IdUsuario;
-                        window.localStorage["IdCompany"] = obj.AutenticationUserResult.IdCompany;
-                        //window.localStorage["IdGroupCompany"] = obj.AutenticationUserResult.IdGroupCompany;
-                        window.localStorage["CompanyName"] = obj.AutenticationUserResult.CompanyName;
-                        window.localStorage["IdContact"] = obj.AutenticationUserResult.IdContact;
-                        window.localStorage["ContactName"] = obj.AutenticationUserResult.ContactName;
-                        //window.localStorage["Email"] = obj.AutenticationUserResult.Email;
-                        $('#results').html("");
-                        //$.mobile.changePage("default.html");
-                        //$.mobile.changePage("default.html?param1=" + encodeURIComponent(obj.AutenticationUserResult.IdCompany) + "&company="+ encodeURIComponent(obj.AutenticationUserResult.CompanyName) +"");
-                        //$.mobile.changePage("default.html", { data: { 'param1': IdCompany } });
-
-                        var argValue = obj.AutenticationUserResult.CompanyName;
-                        //$.mobile.changePage("default.html", { data: { param1: argValue } });
-                        //$.mobile.changePage("default.html");
-                        window.location.href = 'default.html';
-                    } else {
-                        switch (obj.AutenticationUserResult.error.Descripcion) {
-                            case '1':
-                                $('#results').html("<span>Inactive Company. Please contact administrator.</span>");
-                                break;
-                            case '2':
-                                $('#results').html("<span>Incorrect password.</span>");
-                                break;
-                            case '3':
-                                $('#results').html("<span>Inactive User. Please contact administrator.</span>");
-                                break;
-                            case '4':
-                                $('#results').html("<span>Username not found.</span>");
-                                break;
-                        }
-                    }
-
-                    //var userId = localStorage.getItem("userId");
-                    //if (userId == null || userId == 0) { jQT.goTo("#login"); }
-
-                },
-                complete: function () {
-                    $("#imgAjaxLoader").hide();
-                }
-            });
-
-        });
-
-        $("#imgUbicacion").click(function () {
-            //alert('cambio de oagina');
-            $.mobile.changePage('geocalizacion.html');
-        })
-    };
-
-    function onPause() {
-        // TODO: This application has been suspended. Save application state here.
-    };
-
-    function onResume() {
-        // TODO: This application has been reactivated. Restore application state here.
-    };
-
-
-})();
+app.initialize();
