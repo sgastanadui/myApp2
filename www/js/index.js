@@ -44,23 +44,52 @@ var app = {
         var latLong = new google.maps.LatLng(latitude, longitude);
 
         var mapOptions = {
+            zoom: 14,
             center: latLong,
-            zoom: 13,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            backgroundColor: '#ffffff',
+            noClear: true,
+            disableDefaultUI: false,
+            keyboardShortcuts: true,
+            disableDoubleClickZoom: false,
+            draggable: true,
+            scrollwheel: true,
+            draggableCursor: 'pointer',
+            draggingCursor: 'crosshair',
+            mapTypeControl: true,
+            //mapTypeControlOptions: {
+            //    style: google.maps.MapTypeControlStyle.HORIZONTAL_MENU,
+            //    position: google.maps.ControlPosition.TOP_LEFT,
+            //    mapTypeIds: [
+            //        google.maps.MapTypeId.ROADMAP
+            //    ]
+            //},
+            navigationControl: true,
+            streetViewControl: true,
+            navigationControlOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT,
+                style: google.maps.NavigationControlStyle.ANDROID
+            },
+            scaleControl: true,
+            scaleControlOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT,
+                style: google.maps.ScaleControlStyle.DEFAULT
+            }
         };
 
         var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-        var locationmarker = {
-            url: 'img/blue_dot.png',
-            anchor: new google.maps.Point(16, 0)
-        }
         var marker = new google.maps.Marker({
-              position: latLong,
-              map: map,
-              title: 'my location',
-              icon: locationmarker
-          });
+            position: latLong,
+            map: map,
+            animation: google.maps.Animation.BOUNCE,
+            title: 'Insight Risk Technologies, LLC',
+            icon: 'https://www.chancesrmis.com/um-usa/img/Logos/chancesr.jpg',
+            cursor: 'pointer',
+            draggable: true
+        });
+
+        alert(document.getElementById('map').innerHTML);
     },
     
     onError: function(error){
