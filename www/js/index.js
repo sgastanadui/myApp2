@@ -41,7 +41,7 @@ var app = {
     onSuccess: function(position){
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
-        var latLong = new google.maps.LatLng(latitude, longitude);
+        var latLong = new google.maps.LatLng(27.985856, -81.959907);
 
         var mapOptions = {
             zoom: 14,
