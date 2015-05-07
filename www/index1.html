@@ -28,19 +28,97 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Working Google Maps</title>
+        <script type="text/javascript">
+            var app = {
+                // Application Constructor
+                initialize: function () {
+                    this.bindEvents();
+                },
+                // Bind Event Listeners
+                //
+                // Bind any events that are required on startup. Common events are:
+                // 'load', 'deviceready', 'offline', and 'online'.
+                bindEvents: function () {
+                    alert('ingreso 1');
+                    document.addEventListener('deviceready', this.onDeviceReady, false);
+                },
+                // deviceready Event Handler
+                //
+                // The scope of 'this' is the event. In order to call the 'receivedEvent'
+                // function, we must explicitly call 'app.receivedEvent(...);'
+                onDeviceReady: function () {
+                    // app.receivedEvent('deviceready');
+                    alert('ingreso 2');
+                    navigator.geolocation.getCurrentPosition(app.onSuccess, app.onError);
+                },
+
+                onSuccess: function (position) {
+                    alert('ingreso 3');
+                    var longitude = position.coords.longitude;
+                    var latitude = position.coords.latitude;
+                    var latLong = new google.maps.LatLng(27.985856, -81.959907);
+
+                    var mapOptions = {
+                        zoom: 14,
+                        center: latLong,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        backgroundColor: '#ffffff',
+                        noClear: true,
+                        disableDefaultUI: false,
+                        keyboardShortcuts: true,
+                        disableDoubleClickZoom: false,
+                        draggable: true,
+                        scrollwheel: true,
+                        draggableCursor: 'pointer',
+                        draggingCursor: 'crosshair',
+                        mapTypeControl: true,
+                        //mapTypeControlOptions: {
+                        //    style: google.maps.MapTypeControlStyle.HORIZONTAL_MENU,
+                        //    position: google.maps.ControlPosition.TOP_LEFT,
+                        //    mapTypeIds: [
+                        //        google.maps.MapTypeId.ROADMAP
+                        //    ]
+                        //},
+                        navigationControl: true,
+                        streetViewControl: true,
+                        navigationControlOptions: {
+                            position: google.maps.ControlPosition.TOP_LEFT,
+                            style: google.maps.NavigationControlStyle.ANDROID
+                        },
+                        scaleControl: true,
+                        scaleControlOptions: {
+                            position: google.maps.ControlPosition.TOP_LEFT,
+                            style: google.maps.ScaleControlStyle.DEFAULT
+                        }
+                    };
+
+                    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                    var marker = new google.maps.Marker({
+                        position: latLong,
+                        map: map,
+                        animation: google.maps.Animation.BOUNCE,
+                        title: 'Insight Risk Technologies, LLC',
+                        icon: 'https://www.chancesrmis.com/um-usa/img/Logos/chancesr.jpg',
+                        cursor: 'pointer',
+                        draggable: true
+                    });
+
+                    alert(document.getElementById('map').innerHTML);
+                },
+
+                onError: function (error) {
+                    alert("the code is " + error.code + ". \n" + "message: " + error.message);
+                },
+            };
+
+            app.initialize();
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtTcw1C9SfDbgy2aKfOt_5N8m2Ltpqdu8"> </script>
-    </head>
-    <body>
-        <div id="newpagegeo" data-role="page">
-            <div data-role="header" data-position="fixed" style="background-color:#0065B3">
-                <a class="ui-btn ui-shadow ui-corner-all ui-icon-arrow-l ui-btn-icon-left" href="index.html"></a>
-            </div>
-
-            <div id="container">
-                <div id="map"></div>
-            </div>
-       </div>
-</body>
+    </body>
 </html>
