@@ -16,85 +16,60 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-       // app.receivedEvent('deviceready');
-       navigator.geolocation.getCurrentPosition(app.onSuccess, app.onError);
-    },
+	// Application Constructor
+	initialize: function() {
+		this.bindEvents();
+	},
+	// Bind Event Listeners
+	//
+	// Bind any events that are required on startup. Common events are:
+	// 'load', 'deviceready', 'offline', and 'online'.
+	bindEvents: function() {
+		document.addEventListener('deviceready', this.onDeviceReady, false);
+	},
+	// deviceready Event Handler
+	//
+	// The scope of 'this' is the event. In order to call the 'receivedEvent'
+	// function, we must explicitly call 'app.receivedEvent(...);'
+	onDeviceReady: function() {
+		app.receivedEvent('deviceready');
+		window.plugins.pushNotification.register(
+		function(token){
+			alert(token);
+		},
+		function(){
+			alert('Error al registrarse en el servidor APNS');
+		},{
+			"badge":"true",
+			"sound":"true",
+			"alert":"true",
+			"ecb":"onNotificationAPN"
+		});
+	},
+	// Update DOM on a Received Event
+	receivedEvent: function(id) {
+		var parentElement = document.getElementById(id);
+		var listeningElement = parentElement.querySelector('.listening');
+		var receivedElement = parentElement.querySelector('.received');
 
-    onSuccess: function(position){
-        var longitude = position.coords.longitude;
-        var latitude = position.coords.latitude;
-        var latLong = new google.maps.LatLng(27.985856, -81.959907);
+		listeningElement.setAttribute('style', 'display:none;');
+		receivedElement.setAttribute('style', 'display:block;');
 
-        var mapOptions = {
-            zoom: 14,
-            center: latLong,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            backgroundColor: '#ffffff',
-            noClear: true,
-            disableDefaultUI: false,
-            keyboardShortcuts: true,
-            disableDoubleClickZoom: false,
-            draggable: true,
-            scrollwheel: true,
-            draggableCursor: 'pointer',
-            draggingCursor: 'crosshair',
-            mapTypeControl: true,
-            //mapTypeControlOptions: {
-            //    style: google.maps.MapTypeControlStyle.HORIZONTAL_MENU,
-            //    position: google.maps.ControlPosition.TOP_LEFT,
-            //    mapTypeIds: [
-            //        google.maps.MapTypeId.ROADMAP
-            //    ]
-            //},
-            navigationControl: true,
-            streetViewControl: true,
-            navigationControlOptions: {
-                position: google.maps.ControlPosition.TOP_LEFT,
-                style: google.maps.NavigationControlStyle.ANDROID
-            },
-            scaleControl: true,
-            scaleControlOptions: {
-                position: google.maps.ControlPosition.TOP_LEFT,
-                style: google.maps.ScaleControlStyle.DEFAULT
-            }
-        };
-
-        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-        var marker = new google.maps.Marker({
-            position: latLong,
-            map: map,
-            animation: google.maps.Animation.BOUNCE,
-            title: 'Insight Risk Technologies, LLC',
-            icon: 'https://www.chancesrmis.com/um-usa/img/Logos/chancesr.jpg',
-            cursor: 'pointer',
-            draggable: true
-        });
-
-        alert(document.getElementById('map').innerHTML);
-    },
-    
-    onError: function(error){
-        alert("the code is " + error.code + ". \n" + "message: " + error.message);
-    },
+		console.log('Received Event: ' + id);
+	}
 };
+function onNotificationAPN (event) {
+    if (event.alert) {
+       alert(event.alert);
+    }
 
-app.initialize();
+    if (event.sound) {
+        var snd = new Media(event.sound);
+        snd.play();
+    }
+
+    if (event.badge) {
+        window.plugins.pushNotification.setApplicationIconBadgeNumber(function(){}, function(){}, event.badge);
+    }
+}
